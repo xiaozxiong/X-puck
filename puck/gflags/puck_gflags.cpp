@@ -30,6 +30,7 @@ DEFINE_string(puck_log_file, "log/puck.log", "log file name");
 //通用参数
 DEFINE_string(index_path, "puck_index", "lib of index files");
 DEFINE_string(index_file_name, "index.dat", "store index format information");
+DEFINE_string(dataset_path, "../dataset", "path of feature data"); //* path of dataset
 DEFINE_string(feature_file_name, "all_data.feat.bin", "feature data of all points");
 DEFINE_string(coarse_codebook_file_name, "coarse.dat", "coarse codebook");
 DEFINE_string(fine_codebook_file_name, "fine.dat", "fine codebook");
@@ -38,14 +39,15 @@ DEFINE_string(cell_assign_file_name, "cell_assign.dat", "cell assign");
 //realtime insert和分布式建库的索引需要这个索引文件，search返回的local id是这个样本在该文件的行数
 DEFINE_string(label_file_name, "all_data.url", "label of points");
 
-DEFINE_int32(feature_dim, 256, "feature dim");
+DEFINE_int32(feature_dim, 256, "feature dim"); //* vector dimension
 DEFINE_bool(whether_norm, true, "whether norm");
 
 DEFINE_int32(coarse_cluster_count, 2000, "the number of coarse clusters");
 DEFINE_int32(fine_cluster_count, 2000, "the number of fine clusters");
-DEFINE_int32(threads_count, std::thread::hardware_concurrency(), "threads count");
+//* set the thread number, std::thread::hardware_concurrency() is the number of CPU kernels
+DEFINE_int32(threads_count, std::thread::hardware_concurrency()/2, "threads count");
 
-DEFINE_int32(ip2cos, 0, "Convert ip to cos, 0-NA, 1-directly，2-need transform");
+DEFINE_int32(ip2cos, 0, "Convert ip to cos, 0-NA, 1-directly, 2-need transform");
 
 //puck
 DEFINE_bool(whether_pq, true, "whether pq");
@@ -59,15 +61,15 @@ DEFINE_string(filter_data_file_name, "filter_data.dat", "filter data of points")
 
 //tinker
 DEFINE_string(tinker_file_name, "tinker_relations.dat", "tinker_file_name");
-DEFINE_int32(tinker_neighborhood, 16, "neighborhood conut");
-DEFINE_int32(tinker_construction, 600, "tinker_construction");
+DEFINE_int32(tinker_neighborhood, 16, "neighborhood conut"); //* M_
+DEFINE_int32(tinker_construction, 600, "tinker_construction"); //* ef_construction
 
 /***********检索参数*********/
 //检索相关
 //检索时，初始化内存池的size
 DEFINE_int32(context_initial_pool_size, std::thread::hardware_concurrency(), "search context pool size");
 //检索通用参数
-DEFINE_int32(search_coarse_count, 200, "restrict the retrieval range in top-n nearest coarse clusters");
+DEFINE_int32(search_coarse_count, 200, "restrict the retrieval range in top-n nearest coarse clusters"); // 检索一级聚类中心的个数
 DEFINE_int32(topk, 100, "return top-k nearest points");
 
 //HierarchicalClusterIndex
@@ -78,7 +80,7 @@ DEFINE_int32(filter_topk, FLAGS_topk * 11, "filter top-k");
 DEFINE_double(radius_rate, 1.0, "radius_rate");
 
 //tinker
-DEFINE_int32(tinker_search_range, FLAGS_topk * 5, "tinker search param, tinker_search_range");
+DEFINE_int32(tinker_search_range, FLAGS_topk * 5, "tinker search param, tinker_search_range"); //* ef_search
 
 }
 

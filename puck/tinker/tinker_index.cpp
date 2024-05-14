@@ -56,7 +56,7 @@ int TinkerIndex::check_index_type() {
 int TinkerIndex::search_top1_fine_cluster(puck::SearchContext* context, const float* feature) {
     auto& search_cell_data = context->get_search_cell_data();
     float* cluster_inner_product = search_cell_data.cluster_inner_product;
-
+    //* compute the distace between feature vector and all fine cluster centroids
     matrix_multiplication(_fine_vocab, feature, _conf.fine_cluster_count, 1, _conf.feature_dim,
                   "TN", cluster_inner_product);
     puck::MaxHeap result_heap(_conf.fine_cluster_count, search_cell_data.fine_distance,
@@ -68,12 +68,12 @@ int TinkerIndex::search_top1_fine_cluster(puck::SearchContext* context, const fl
 
     result_heap.reorder();
 
-    std::pair<float, int> nearest_cell;
+    std::pair<float, int> nearest_cell; //* the nearest cell in fine clusters
     nearest_cell.first = 1 << 20;
     //计算一级聚类中心的距离,使用最大堆
     float* coarse_distance = search_cell_data.coarse_distance;
     uint32_t* coarse_tag = search_cell_data.coarse_tag;
-
+    //* find the nearest fine cluster where the node with minimal distance locates.
     for (uint32_t l = 0; l < _conf.search_coarse_count; ++l) {
         int coarse_id = coarse_tag[l];
         //计算query与当前一级聚类中心下cell的距离
@@ -116,9 +116,9 @@ int TinkerIndex::search(const Request* request, Response* response) {
     if (0 != context->reset(_conf)) {
         return -1;
     }
-
+    // std::cout<<"#Debug: before norm - feature[0] = "<<request->feature[0]<<", feature[1] = "<<request->feature[1]<<std::endl;
     const float* feature = normalization(context.get(), request->feature);
-
+    // std::cout<<"#Debug: after norm - feature[0] = "<<feature[0]<<", feature[1] = "<<feature[1]<<std::endl;
     if (feature == nullptr) {
         return -1;
     }
@@ -130,7 +130,7 @@ int TinkerIndex::search(const Request* request, Response* response) {
     if (ret != 0) {
         return ret;
     }
-
+    //* 
     int nearest_cell_id = search_top1_fine_cluster(context.get(), feature);
     const auto* cur_fine_cluster = get_fine_cluster(nearest_cell_id);
     std::vector<int> eps;
@@ -138,7 +138,7 @@ int TinkerIndex::search(const Request* request, Response* response) {
     for (auto i = cur_fine_cluster->memory_idx_start; i < (cur_fine_cluster + 1)->memory_idx_start; ++i) {
         eps.push_back(i);
     }
-
+    // LOG(INFO) << "ep size of level0 in tinker = " << eps.size();
     std::priority_queue<std::pair<float, int>> closest_dist_queuei;
     _tinker_index->SearchOld_level0(feature, _conf.feature_dim,
                                     std::max(_conf.tinker_search_range, (uint32_t)request->topk),

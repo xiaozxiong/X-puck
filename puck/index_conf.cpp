@@ -68,10 +68,11 @@ IndexConf::IndexConf() {
     threads_count = FLAGS_threads_count;
     coarse_cluster_count = FLAGS_coarse_cluster_count;
     fine_cluster_count = FLAGS_fine_cluster_count;
-
+    //TODO: 
     //索引文件
-    index_path = FLAGS_index_path;
-    feature_file_name = index_path + "/" + FLAGS_feature_file_name;
+    index_path = FLAGS_index_path; //*
+    dataset_path = FLAGS_dataset_path;
+    feature_file_name = dataset_path + "/" + FLAGS_feature_file_name;
     coarse_codebook_file_name = index_path + "/" + FLAGS_coarse_codebook_file_name;
     fine_codebook_file_name = index_path + "/" + FLAGS_fine_codebook_file_name;
 
@@ -199,6 +200,8 @@ int IndexConf::adaptive_search_param() {
 }
 
 void IndexConf::show() {
+    LOG(INFO) << "feature_file_name = " << feature_file_name;
+    LOG(INFO) << "index_path = " << index_path;
     LOG(INFO) << "feature_dim = " << feature_dim;
     LOG(INFO) << "whether_norm = " << whether_norm;
     LOG(INFO) << "index_type = " << int(index_type);

@@ -6,6 +6,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(THIRD_PARTY_PATH ${CMAKE_CURRENT_BINARY_DIR}/third_libs)
 
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
+
 # config GIT_URL with github mirrors to speed up dependent repos clone
 option(GIT_URL "Git URL to clone dependent repos" ${GIT_URL})
 if(NOT GIT_URL)

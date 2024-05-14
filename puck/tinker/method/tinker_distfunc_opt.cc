@@ -49,7 +49,9 @@ Hnsw<dist_t>::SearchOld_level0(const float* pVectq, const size_t feature_dim, co
                               TmpRes));
         ++distance_computations;
         massVisited[curNodeNum] = currentV;
-
+        //! 
+        float* v = (float*)(data_level0_memory_ + curNodeNum * memoryPerObject_ + offsetData_ + objectDataOffset_);
+        // std::cout<<"#Debug: "<<enterpointId<<" -> "<<v[0]<<", "<<v[1]<<std::endl;
         if (closestDistQueuei.size() < (size_t)topk || curdist < closestDistQueuei.top().first) {
             candidateQueuei.emplace(-curdist, curNodeNum);
             closestDistQueuei.emplace(curdist, curNodeNum);

@@ -68,6 +68,7 @@ struct IndexConf {
     IndexType index_type; //0 hcluster, 1 puck, 2 tinker
     std::string pq_data_file_name;
     std::string index_path;
+    std::string dataset_path;
     //tinker的检索参数
     uint32_t tinker_search_range;
 

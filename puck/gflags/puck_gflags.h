@@ -33,6 +33,7 @@ DECLARE_string(puck_log_file);
 //通用参数
 DECLARE_string(index_path);
 DECLARE_string(index_file_name);
+DECLARE_string(dataset_path);
 DECLARE_string(feature_file_name);
 DECLARE_string(coarse_codebook_file_name);
 DECLARE_string(fine_codebook_file_name);

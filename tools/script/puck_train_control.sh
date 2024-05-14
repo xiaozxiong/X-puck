@@ -1,4 +1,8 @@
 #!/bin/bash
+
+cd ../.. # tools/script/puck_train_control.sh
+echo `pwd`
+
 function _usage(){
     usage_str="sh ${0} [-i init] [-b build] [-t train] [-f conf_file] [-h help]
     \n\t\t
@@ -20,7 +24,12 @@ is_train=0
 is_build=0
 is_init=0
 init_file=init-feature-example
-conf_file=conf/puck_train.conf
+# config for trianing
+conf_file="tools/demo/conf/tinker_train.conf"
+# conf_file="tools/demo/conf/puck_train.conf"
+# conf_file=conf/puck_train.conf
+
+# -t -b
 while getopts "i:tbf:h" opt
 do
     case $opt in
@@ -63,6 +72,8 @@ fi
 curr_path=`pwd`
 lib_path=$curr_path/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$lib_path
+
+echo "${curr_path}"
 
 if [ $is_train -eq 1 ]; then
     echo "start train"

@@ -135,7 +135,7 @@ int write_fvec_format(const char* file_name, const uint32_t dim, const uint64_t 
     fclose(out_fvec_init);
     return ret;
 }
-
+//* TODO: read input fvec file
 int read_fvec_format(FILE* fvec_init, uint32_t dim, uint64_t n, float* v) {
 
     for (uint64_t i = 0; i < n; ++i) {
@@ -633,6 +633,7 @@ int HierarchicalClusterIndex::init_model_memory() {
 }
 
 int HierarchicalClusterIndex::read_model_file() {
+    LOG(ERROR) << "model file path: " << _conf.index_file_name;
     int fd = -1;
     fd = open(_conf.index_file_name.c_str(), O_RDONLY);
     struct stat st;
@@ -1256,7 +1257,7 @@ int random_sampling(const std::string& init_file_name, const u_int64_t total_cnt
 
     //随机抽样
     std::mt19937 rnd(time(0));
-    std::uniform_int_distribution<> dis(0, total_cnt-1);
+    std::uniform_int_distribution<> dis(0, total_cnt-1); // [0, total_cnt)
     std::vector<bool> filter(total_cnt, false);
 
     std::ifstream learn_stream;
@@ -1285,14 +1286,14 @@ int random_sampling(const std::string& init_file_name, const u_int64_t total_cnt
             sampled_points.push_back(rnd_int);
         }
 
-        std::sort(sampled_points.begin(), sampled_points.end());
+        std::sort(sampled_points.begin(), sampled_points.end()); //* random sample points
         for(uint32_t i = 0; i < sampled_points.size(); ++i){
 
             int true_point_idx = sampled_points[i];
             u_int64_t offset = (u_int64_t)true_point_idx * feature_dim * sizeof(float) +
                             (u_int64_t)true_point_idx * sizeof(
                                 int);
-            learn_stream.seekg(offset, std::ios::beg);
+            learn_stream.seekg(offset, std::ios::beg); //* get offset in byte
             uint32_t cur_dim = -1;
             //feature长度检查，如果出错说明文件格式有问题
             learn_stream.read((char*)&cur_dim, sizeof(int));
@@ -1362,7 +1363,7 @@ int HierarchicalClusterIndex::check_feature_dim() {
     _conf.total_point_count = st.st_size / per_point_len;
     return 0;
 }
-
+//TODO: train k-means
 int HierarchicalClusterIndex::train() {
     if (check_feature_dim() != 0) {
         LOG(ERROR) << "check " << _conf.feature_file_name << " has error.";
@@ -1519,15 +1520,17 @@ const float* HierarchicalClusterIndex::normalization(SearchContext* context, con
         memcpy(search_cell_data.query_norm, feature, sizeof(float) * dim);
         return search_cell_data.query_norm;
     } else if (_conf.whether_norm) {
+        // printf("#Debug: norm\n");
         memcpy(search_cell_data.query_norm, feature, sizeof(float) * _conf.feature_dim);
         //fvec_normalize(search_cell_data.query_norm, _conf.feature_dim, 2);
+        //* L2 norm
         float norm = cblas_snrm2(_conf.feature_dim, search_cell_data.query_norm, 1);
 
         if (norm < 1e-6) {
             LOG(ERROR) << "query norm is " << norm << ", could not be normalize";
             return nullptr;
         }
-
+        //* (1/norm) * vector
         cblas_sscal(_conf.feature_dim, 1.0 / norm, search_cell_data.query_norm, 1);
         return search_cell_data.query_norm;
     }
