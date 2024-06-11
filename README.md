@@ -21,7 +21,7 @@ The `.conf` file in `tools/demo/conf/` can be modified to set traing and buildin
 - `tools/demo/conf/puck_train.conf`
 - `tools/demo/conf/tinker_train.conf`
 
-Then we can run the shell script `puck_train_control.sh` in `tools/script/` to train and build index. It is worthy to note that the current path of `puck_train_control.sh` is project dirctory and the parameters in `.conf` file should be set basing on it. If this script fails to run, the possible reason is the writing permission so you should add `sudo`.
+Then we can run the shell script `puck_train_control.sh` in `tools/script/` to train and build index. It is worthy to note that the current path of `puck_train_control.sh` is project directory and the parameters in `.conf` file should be set basing on it. If this script fails to run, the possible reason is the writing permission so you should add `sudo`.
 
 ```shell
 cd tools/script
