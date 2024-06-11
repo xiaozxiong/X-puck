@@ -83,7 +83,7 @@ int read_feature_data(std::string& input_file, std::vector<std::vector<float>>& 
     return 0;
 }
 
-// TODO: read ground truth
+// TODO: read ground truth in .ivecs format
 int read_gt_file(const std::string &path, std::vector<int> &groundtruth) {
     std::ifstream in_descriptor(path, std::ios::binary);
     if (!in_descriptor.is_open()) {
@@ -107,6 +107,26 @@ int read_gt_file(const std::string &path, std::vector<int> &groundtruth) {
     in_descriptor.close();
 
     return k_of_groundtruth;
+}
+
+// TODO: read ground truth file from https://big-ann-benchmarks.com/neurips21.html
+int read_kNN_gt(const std::string &path, std::vector<int> &groundtruth) {
+    std::ifstream in_descriptor(path, std::ios::binary);
+    if (!in_descriptor.is_open()) {
+        exit(1);
+    }
+    int num_queries = 0, gt_k = 0;
+    in_descriptor.read((char *)&num_queries, sizeof(int));
+    in_descriptor.read((char *)&gt_k, sizeof(int));
+
+    groundtruth.resize((size_t)num_queries * gt_k);
+
+    in_descriptor.read((char *)groundtruth.data(), sizeof(int) * num_queries * gt_k);
+
+    in_descriptor.close();
+
+    std::cout << "Ground truth: (" << num_queries << ", " << gt_k << ")\n";
+    return gt_k;
 }
 
 //TODO: compute recall
@@ -156,6 +176,9 @@ void DisplayResultAndGroundTruth(int *result, int num_of_queries, int k,
 
 int main(int argc, char** argv) {
     google::ParseCommandLineFlags(&argc, &argv, true);
+    
+    // google::SetLogDestination(google::INFO, "../log/search_info");
+    // FLAGS_alsologtostderr = 0;
     std::cout<<"Debug: gflag\n";
 
     //1. load index
@@ -212,18 +235,21 @@ int main(int argc, char** argv) {
     response.distance = new float[request.topk];
     response.local_idx = new uint32_t[request.topk];
 
+    double avg_entry_time = 0.0;
     double avg_search_time = 0.0;
 
     for (int i = 0; i < item_count; ++i) {
         request.feature = query_data[i].data();
 
-        puck::base::Timer tm_search;
-        tm_search.start();
+        // puck::base::Timer tm_search;
+        // tm_search.start();
 
         ret = index->search(&request, &response);
 
-        tm_search.stop();
-        avg_search_time += tm_search.m_elapsed(1.0); // ms
+        // tm_search.stop();
+        // avg_search_time += tm_search.m_elapsed(1.0); // ms
+        avg_entry_time += response.entry_time;
+        avg_search_time += response.search_time;
 
         if (ret != 0) {
             LOG(ERROR) << "search item " << i << " error" << ret;
@@ -234,14 +260,17 @@ int main(int argc, char** argv) {
         }
         // std::cout<<"min dis = "<<response.distance[0]<<std::endl;
     }
+    avg_entry_time /= item_count;
     avg_search_time /= item_count;
 
     std::vector<int> groundtruth;
     int gt_k = read_gt_file(gt_file, groundtruth);
+    // int gt_k = read_kNN_gt(gt_file, groundtruth);
 
     float recall=compute_recall(query_result.data(), groundtruth.data(), item_count, request.topk, gt_k, request.topk);
-
-    std::cout << "Recall@"<< request.topk <<" = "<< recall << ", avg. search time = " << avg_search_time << "ms, QPS = " << 1000.0/avg_search_time << "\n";
+    std::cout << "Recall@"<< request.topk <<" = "<< recall << "\n";
+    std::cout << "avg. entry time = " << avg_entry_time << " ms, avg. search time = " << avg_search_time << " ms\n";
+    // , QPS = " << 1000.0/avg_search_time << "
 
     // DisplayResultAndGroundTruth(query_result.data(), item_count, request.topk, groundtruth.data(), gt_k);
 

@@ -222,7 +222,7 @@ int nearest_center(uint32_t dim, const float* centroids, const size_t centroid_c
                    const float* train_dataset, const size_t point_cnt, int* assign, float* dis) {
     std::vector<float> points_norm(point_cnt);
     std::vector<float> centroids_norm(centroid_cnt);
-    int nt = std::thread::hardware_concurrency();
+    int nt = std::thread::hardware_concurrency() / 2; //* 
 
     #pragma omp parallel for schedule(dynamic) num_threads(nt)
 

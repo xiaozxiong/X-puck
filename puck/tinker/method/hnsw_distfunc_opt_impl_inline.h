@@ -187,7 +187,7 @@ inline float L2Sqr16Ext(const float* pVect1, const float* pVect2, size_t& qty, f
 
     while (pVect1 < pEnd1) {
         PREFETCH((char*)(pVect2 + 16), _MM_HINT_T0);
-        v1_32_4 = _mm_loadu_ps(pVect1);
+        v1_32_4 = _mm_loadu_ps(pVect1); //* unaligned load 
         pVect1 += 4;
         v2_32_4 = _mm_loadu_ps(pVect2);
         pVect2 += 4;
@@ -216,7 +216,7 @@ inline float L2Sqr16Ext(const float* pVect1, const float* pVect2, size_t& qty, f
         sum_32_4 = _mm_add_ps(sum_32_4, _mm_mul_ps(diff, diff));
     }
 
-    _mm_store_ps(TmpRes, sum_32_4);
+    _mm_store_ps(TmpRes, sum_32_4); //* aligned store
 
     return TmpRes[0] + TmpRes[1] + TmpRes[2] + TmpRes[3];
 }
@@ -232,7 +232,7 @@ inline float L2SqrExt(const float* pVect1, const float* pVect2, size_t& qty, flo
 
     __m128 diff, v1_32_4, v2_32_4;
     __m128 sum_32_4 = _mm_set1_ps(0);
-
+    //? why
     while (pVect1 < pEnd1) {
         PREFETCH((char*)(pVect2 + 16), _MM_HINT_T0);
         v1_32_4 = _mm_loadu_ps(pVect1);

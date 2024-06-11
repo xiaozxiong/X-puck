@@ -1,6 +1,8 @@
-# Usage
+## Usage Steps
 
-### Build
+### Before Running
+
+The MKL library is required.
 
 ```shell
 source /opt/intel/oneapi/mkl/latest/env/vars.sh
@@ -15,11 +17,11 @@ Firstly, we need to create directory `output` to store index and `dataset` to li
 ln -s /mnt/data1/xzx/tinker_output output
 ln -s /mnt/data0/ANN-Datasets dataset
 ```
-The `.conf` file in `tools/demo/conf/` can modified to set traing and building parameter:
+The `.conf` file in `tools/demo/conf/` can be modified to set traing and building parameter:
 - `tools/demo/conf/puck_train.conf`
 - `tools/demo/conf/tinker_train.conf`
 
-Then we can run the shell script `puck_train_control.sh` in `tools/script/` to train and build index. It is worthy to note that the current path of `puck_train_control.sh` is `exe_puck/` and the parameters in `.conf` file shoule be set based on it. If this script fails to run, the possible reason is the writing permission and you should add `sudo`.
+Then we can run the shell script `puck_train_control.sh` in `tools/script/` to train and build index. It is worthy to note that the current path of `puck_train_control.sh` is project dirctory and the parameters in `.conf` file should be set basing on it. If this script fails to run, the possible reason is the writing permission so you should add `sudo`.
 
 ```shell
 cd tools/script

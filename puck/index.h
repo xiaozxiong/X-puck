@@ -78,6 +78,9 @@ struct Response {
         local_idx = nullptr;
         result_num = 0;
     }
+    //* for measuring
+    double entry_time;
+    double search_time;
 };
 
 enum class IndexType {

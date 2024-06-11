@@ -116,6 +116,10 @@ int TinkerIndex::search(const Request* request, Response* response) {
     if (0 != context->reset(_conf)) {
         return -1;
     }
+    //* measure time of getting entry
+    puck::base::Timer tm_entry;
+    tm_entry.start();
+
     // std::cout<<"#Debug: before norm - feature[0] = "<<request->feature[0]<<", feature[1] = "<<request->feature[1]<<std::endl;
     const float* feature = normalization(context.get(), request->feature);
     // std::cout<<"#Debug: after norm - feature[0] = "<<feature[0]<<", feature[1] = "<<feature[1]<<std::endl;
@@ -138,6 +142,12 @@ int TinkerIndex::search(const Request* request, Response* response) {
     for (auto i = cur_fine_cluster->memory_idx_start; i < (cur_fine_cluster + 1)->memory_idx_start; ++i) {
         eps.push_back(i);
     }
+
+    tm_entry.stop();
+    response->entry_time = tm_entry.m_elapsed(1.0); // ms
+
+    puck::base::Timer tm_search;
+    tm_search.start();
     // LOG(INFO) << "ep size of level0 in tinker = " << eps.size();
     std::priority_queue<std::pair<float, int>> closest_dist_queuei;
     _tinker_index->SearchOld_level0(feature, _conf.feature_dim,
@@ -158,6 +168,9 @@ int TinkerIndex::search(const Request* request, Response* response) {
         response->local_idx[idx] = _memory_to_local[cur_memory_id];
         closest_dist_queuei.pop();
     }
+
+    tm_search.stop();
+    response->search_time = tm_search.m_elapsed(1.0); // ms
 
     return 0;
 }

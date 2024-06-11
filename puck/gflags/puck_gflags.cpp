@@ -38,8 +38,9 @@ DEFINE_string(fine_codebook_file_name, "fine.dat", "fine codebook");
 DEFINE_string(cell_assign_file_name, "cell_assign.dat", "cell assign");
 //realtime insert和分布式建库的索引需要这个索引文件，search返回的local id是这个样本在该文件的行数
 DEFINE_string(label_file_name, "all_data.url", "label of points");
-
-DEFINE_int32(feature_dim, 256, "feature dim"); //* vector dimension
+//* vector dimension
+DEFINE_int32(feature_dim, 256, "feature dim");
+//* whether normlize vector, should be set to false when using L2 distance
 DEFINE_bool(whether_norm, true, "whether norm");
 
 DEFINE_int32(coarse_cluster_count, 2000, "the number of coarse clusters");
